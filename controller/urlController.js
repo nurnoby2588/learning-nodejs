@@ -4,7 +4,6 @@ const handleCatchError = require("../Error/handleCatchError");
 
 const createShortUrl = async (req, res) => {
     const { longUrl } = req.body;
-
     if (!longUrl) {
         return res.status(400).json({ error: 'Long URL is required' });
     }
@@ -15,6 +14,10 @@ const createShortUrl = async (req, res) => {
             return res.status(500).json({ error: 'Failed to create short URL' });
         }
         await url.save();
+        // for ejs
+       return res.render('home',
+           { id: shortId }
+        )
         res.status(201).json({ shortUrl: `${req.protocol}://${req.get('host')}/url/${shortId}` });
     } catch (error) {
         console.error('Error creating short URL:', error);
