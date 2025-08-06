@@ -9,11 +9,11 @@ const createShortUrl = async (req, res) => {
     }
     try {
         const shortId = shortid.generate()
-        const url = new Url({ shortId, redirectUrl: longUrl, visitHistory: [] });
+        const url = new Url({ shortId, redirectUrl: longUrl, visitHistory: [], createBy: req.user._id });
         if (!url) {
             return res.status(500).json({ error: 'Failed to create short URL' });
         }
-        await url.save();
+        await url?.save();
         // for ejs
        return res.render('home',
            { id: shortId }
@@ -35,7 +35,7 @@ const getRedirectUrl = async (req, res) => {
         if (!entry) {
             return res.status(404).json({ error: 'Short URL not found' });
         }
-        res.redirect(entry.redirectUrl);
+        res.redirect(entry?.redirectUrl);
     } catch (error) {
         return handleCatchError(error, req, res);
     }
