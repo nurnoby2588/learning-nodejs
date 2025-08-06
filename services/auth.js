@@ -1,14 +1,25 @@
-const secionIdUserMap = new Map();
+const jwt = require('jsonwebtoken');
 
-const setUser =  (id,user) => {
-   
-   return secionIdUserMap.set(id,user)
+const setUser = (user) => {
+    const payload = {
+        id: user._id,
+        name: user.name,
+        email: user.email
+    }
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' },)
+
+    return token
 }
-const getUser =  (id) => {
-     
-    return secionIdUserMap.get(id)
+const getUser = (token) => {
+    if (!token) return null;
+    try {
+        return jwt.verify(token, process.env.JWT_SECRET)
+    } catch (error) {
+        return null;
+    }
 }
-module.exports={
+module.exports = {
     setUser,
     getUser
 }
