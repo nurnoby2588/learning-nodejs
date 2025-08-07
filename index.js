@@ -6,19 +6,20 @@ const PORT = process.env.PORT || 3000;
 const path = require('path');
 const staticRouter = require('./router/staticRoute');
 const userRouter = require('./router/userRouter');
-const {verifyUser,checkAuth} = require('./middleware/verifyUser');
+const {restrictTo,checkForAuthentication} = require('./middleware/verifyUser');
 const cookieParser = require('cookie-parser');
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(checkForAuthentication);
 
 app.set('view engine', 'ejs');
 app.set('views', path.resolve( './view'));
 
-app.use('/url',verifyUser, urlRouter)
-app.use('/',checkAuth,staticRouter)
+app.use("/url", restrictTo(["NORMAL"]), urlRouter);
+app.use('/',staticRouter)
 app.use('/user',userRouter)
 app.get('/', (req, res) => {
     res.send('Welcome to the Node.js Application');
